@@ -1,6 +1,10 @@
 import express from 'express';
+import { regionInformations } from './region_informations';
+
 const app = express();
 const port = 3000;
+
+app.get('/get_location')
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
