@@ -3,7 +3,8 @@ import 'identification_screen.dart';
 import 'fishbag_screen.dart';
 import 'glossary_screen.dart';
 import 'location_screen.dart';
-import '../widget/bottom_nav_bar.dart'; 
+import '../widget/bottom_nav_bar.dart';
+import '../services/fetch_service.dart'; 
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,15 +13,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  
   Widget build(BuildContext context) {
+    FetchService fetchService = FetchService();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Page'),
       ),
       body: Center(
-        child: Text(
-          'Bienvenue sur la page d\'accueil',
-          style: TextStyle(fontSize: 24),
+        child: ElevatedButton(
+          onPressed: () {
+            fetchService.fetch();
+          },
+          child: Text("fetch"),
         ),
       ),
       bottomNavigationBar: BottomNavBar(
