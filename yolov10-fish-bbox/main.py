@@ -3,11 +3,16 @@ from typing import List
 
 import torch
 import cv2
+import torch.utils
+import torch.utils.mobile_optimizer
 
 from inference import YOLOInferenceTorch, YOLOResult
 
 def convert_model_onnx(model: torch.nn.Module, input: torch.Tensor):
-    torch.onnx.export(model, input, "output/model.onnx", input_names=["img"], output_names=["bbox"], opset_version=12)
+    name = "output/model.onnx"
+    torch.onnx.export(model, input, name, input_names=["img"], output_names=["bbox"], opset_version=11)
+    optmi_model = torch.utils.mobile_optimizer.optimize_for_mobile(model)
+    optmi_model._save_for_lite_interpreter("output/model_opti.pt")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="An example of argparse.")
@@ -31,6 +36,7 @@ if __name__ == "__main__":
     cv2.imwrite("output.png", im)
 
     input_imgs, params = inferer.preprocess([input])
-    print(f"INPUT SHAPE: {input_imgs[0].shape}")
+    print(f"INPUT SHAPE: {input_imgs[0].shape}, DTYPE: {input_imgs.dtype}")
 
-    #convert_model_onnx(inferer.model, input_imgs)
+    inferer.model = inferer.model.to(torch.float32)
+    convert_model_onnx(inferer.model, input_imgs)
